@@ -1,0 +1,52 @@
+# Zenkner-Technology Public Source-Available License (Non-Derivative)
+Version 1.0, 2026
+
+Copyright (c) 2026 Zenkner-Technology (https://zenkner-technology.de). All rights reserved.
+
+==============================================================================
+1. DEFINITIONS
+==============================================================================
+Software refers to the FileSpatial software, including source code, documentation,
+assets, and associated files distributed under this License.
+Licensor refers to Zenkner-Technology.
+You (or Your) refers to an individual or legal entity exercising permissions
+granted by this License.
+
+==============================================================================
+2. PERMITTED USE & DISTRIBUTION
+==============================================================================
+Subject to the terms and conditions of this License, Licensor grants You a
+worldwide, non-exclusive, royalty-free license to:
+
+  a) Run, deploy, execute, and use the Software in unmodified form for personal,
+     educational, or internal organizational purposes.
+  b) View, study, and inspect the source code of the Software.
+  c) Distribute verbatim, unmodified copies of the Software in source or compiled
+     form, provided that:
+       - All copyright, trademark, and author attribution notices from the
+         Software remain intact.
+       - A complete copy of this License is included with every distribution.
+
+==============================================================================
+3. RESTRICTIONS & PROHIBITION OF MODIFICATIONS (NO DERIVATIVES)
+==============================================================================
+You may NOT:
+
+  a) Modify, alter, adapt, translate, transform, refactor, or create derivative
+     works based on the Software or any portion thereof.
+  b) Distribute, publish, sub-license, or host modified versions or derivative works
+     of the Software under any circumstances.
+  c) Remove, obscure, or alter any brand marks, logos, copyright notices, or author
+     attributions (including Zenkner-Technology branding) appearing in the Software.
+  d) Commercialize, resell, re-package, or offer the Software as a paid commercial
+     SaaS/cloud service without prior explicit written permission from the Licensor.
+
+==============================================================================
+4. DISCLAIMER OF WARRANTY
+==============================================================================
+THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
+ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

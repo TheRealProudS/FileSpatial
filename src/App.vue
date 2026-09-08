@@ -1,8 +1,6 @@
 <template>
   <div class="fs-app" :class="`theme-${currentTheme}`">
-    <!-- Sleek & Organized Enterprise Header -->
     <header class="fs-header">
-      <!-- Left: Brand & Hierarchy Breadcrumb -->
       <div class="fs-header-left">
         <div class="fs-brand" @click="navigateToBoard('root')" title="Zum Hauptboard">
           <div class="fs-logo-box">
@@ -12,10 +10,7 @@
             <span class="fs-name">File<span class="fs-accent">Spatial</span></span>
           </div>
         </div>
-
         <div class="fs-header-vsep"></div>
-
-        <!-- Breadcrumbs Navigation -->
         <nav class="fs-breadcrumbs" aria-label="Whiteboard Navigation">
           <button 
             class="fs-crumb-btn" 
@@ -36,10 +31,7 @@
           </template>
         </nav>
       </div>
-
-      <!-- Center: Creation Toolbar & Search -->
       <div class="fs-header-center">
-        <!-- Add Element Button Group -->
         <div class="fs-toolbar-group">
           <button class="fs-tool-btn" @click="addNoteNode" title="Neue Notizkarte erstellen">
             <span class="fs-tool-icon">📝</span>
@@ -56,8 +48,6 @@
           <input type="file" ref="fileInput" multiple style="display: none;" @change="handleFileInput" />
           <input type="file" ref="importFileInput" accept=".fspatial,.json" style="display: none;" @change="handleImportFile" />
         </div>
-
-        <!-- Compact Live Search -->
         <div class="fs-search-box">
           <span class="fs-search-icon">🔍</span>
           <input 
@@ -70,10 +60,7 @@
           <span v-if="searchQuery" class="fs-search-count">{{ searchResults.length }}</span>
         </div>
       </div>
-
-      <!-- Right: Canvas Utilities, Workspace Actions & Theme -->
       <div class="fs-header-right">
-        <!-- Canvas Utilities -->
         <div class="fs-util-group">
           <button 
             class="fs-icon-btn" 
@@ -87,10 +74,7 @@
             <span>⌖</span>
           </button>
         </div>
-
         <div class="fs-header-vsep"></div>
-
-        <!-- Theme Selector -->
         <div class="fs-theme-pill" title="Erscheinungsbild wählen">
           <span class="fs-theme-icon">🎨</span>
           <select v-model="currentTheme" class="fs-theme-select" @change="saveTheme">
@@ -105,10 +89,7 @@
             </optgroup>
           </select>
         </div>
-
         <div class="fs-header-vsep"></div>
-
-        <!-- Workspace Dropdown / Action Cluster -->
         <div class="fs-workspace-group">
           <button class="fs-ws-btn import" @click="triggerImportFile" title="Workspace importieren (.fspatial)">
             <span>Import</span>
@@ -122,8 +103,6 @@
         </div>
       </div>
     </header>
-
-    <!-- Infinite Canvas Container -->
     <main
       class="fs-canvas-container"
       ref="canvasContainer"
@@ -139,10 +118,7 @@
           transformOrigin: '0 0'
         }"
       >
-        <!-- Background Grid -->
         <div class="fs-grid-background"></div>
-
-        <!-- Connection Lines Layer (SVG) -->
         <svg class="fs-svg-connections">
           <line
             v-for="(con, idx) in connections"
@@ -157,8 +133,6 @@
             opacity="0.6"
           />
         </svg>
-
-        <!-- Dynamic Spatial Nodes -->
         <div
           v-for="node in nodes"
           :key="node.id"
@@ -175,17 +149,13 @@
           }"
           @mousedown.stop="startDragNode($event, node)"
         >
-          <!-- Node Header -->
           <div class="fs-node-header">
             <div class="fs-node-tag-badge" :style="{ borderColor: node.color }">
               <span class="fs-node-tag-dot" :style="{ background: node.color }"></span>
               <span :style="{ color: node.color }">{{ node.type.toUpperCase() }}</span>
             </div>
-            
             <span class="fs-node-title" :title="node.title">{{ node.title }}</span>
-
             <div class="fs-node-actions">
-              <!-- Color Selector Dropdown -->
               <div class="fs-node-color-picker" title="Farbe ändern" @mousedown.stop>
                 <button class="fs-node-action-btn fs-color-btn" :style="{ background: node.color }"></button>
                 <div class="fs-color-palette">
@@ -198,8 +168,6 @@
                   ></span>
                 </div>
               </div>
-
-              <!-- Duplicate Node Button -->
               <button 
                 class="fs-node-action-btn" 
                 @click.stop="duplicateNode(node)" 
@@ -207,13 +175,9 @@
               >
                 ⧉
               </button>
-
-              <!-- Delete Node Button -->
               <button class="fs-node-del" @click.stop="removeNode(node.id)" title="Löschen">✕</button>
             </div>
           </div>
-
-          <!-- Node Content: Project / Sub-Board -->
           <div v-if="node.type === 'project'" class="fs-node-body project-body">
             <div class="fs-project-card" @dblclick.stop="openProjectBoard(node)">
               <div class="fs-project-icon-box">
@@ -237,8 +201,6 @@
               </button>
             </div>
           </div>
-
-          <!-- Node Content: Note -->
           <div v-else-if="node.type === 'note'" class="fs-node-body">
             <textarea
               v-model="node.content"
@@ -248,8 +210,6 @@
               @mousedown.stop
             ></textarea>
           </div>
-
-          <!-- Node Content: Image -->
           <div v-else-if="node.type === 'image'" class="fs-node-body img-body">
             <div class="fs-asset-frame" :style="{ height: node.height ? (node.height - 95) + 'px' : '150px' }">
               <img :src="node.url" alt="Asset" class="fs-node-img" draggable="false" />
@@ -259,8 +219,6 @@
               <span class="fs-mini-tag">SVG Asset</span>
             </div>
           </div>
-
-          <!-- Node Content: PDF / Doc -->
           <div v-else-if="node.type === 'pdf'" class="fs-node-body doc-body">
             <div class="fs-pdf-preview" @click.stop="openPdfInWindow(node)" title="PDF in separatem Fenster öffnen">
               <div class="fs-pdf-icon-frame">
@@ -281,8 +239,6 @@
               </button>
             </div>
           </div>
-
-          <!-- Node Resize Handle (Bottom-Right) -->
           <div 
             class="fs-node-resizer" 
             title="Größe anpassen"
@@ -297,8 +253,6 @@
         </div>
       </div>
     </main>
-
-    <!-- Interactive PDF Viewer Modal -->
     <div v-if="activePdfNode" class="fs-pdf-modal-backdrop" @click="closePdfReader">
       <div class="fs-pdf-modal" @click.stop>
         <div class="fs-pdf-modal-header">
@@ -331,15 +285,12 @@
               <a v-if="activePdfNode.url" :href="activePdfNode.url" target="_blank" class="fs-modal-btn secondary">Im Browser-Tab öffnen ↗</a>
               <button class="fs-modal-btn" @click="retryLoadPdf">Erneut versuchen</button>
             </div>
-            <!-- Embedded Fallback if canvas render fails -->
             <iframe v-if="activePdfNode.url" :src="activePdfNode.url" class="fs-pdf-fallback-iframe"></iframe>
           </div>
           <canvas v-show="!pdfLoading && !pdfError" ref="pdfCanvasRef" class="fs-pdf-canvas"></canvas>
         </div>
       </div>
     </div>
-
-    <!-- Canvas Cockpit Status Bar -->
     <footer class="fs-cockpit-bar">
       <div class="fs-cockpit-item">
         <span class="fs-c-label">Engine:</span>
@@ -362,33 +313,27 @@
     </footer>
   </div>
 </template>
-
 <script setup lang=ts>
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure PDF.js worker using local public worker with fallback
 try {
   pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 } catch (e) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 }
 
-// Multi-Theme State (Dark & Light)
 const THEME_STORAGE_KEY = 'filespatial_theme_v1';
 const currentTheme = ref('obsidian');
-
 function loadTheme() {
   const saved = localStorage.getItem(THEME_STORAGE_KEY);
   if (saved) {
     currentTheme.value = saved;
   }
 }
-
 function saveTheme() {
   localStorage.setItem(THEME_STORAGE_KEY, currentTheme.value);
 }
-
 interface CanvasNode {
   id: string;
   title: string;
@@ -405,13 +350,10 @@ interface CanvasNode {
   targetBoardId?: string;
   color: string;
 }
-
 const colorOptions = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#3b82f6'];
-
 const snapToGrid = ref(false);
 const searchQuery = ref('');
 const importFileInput = ref<HTMLInputElement | null>(null);
-
 interface ProjectBoard {
   id: string;
   title: string;
@@ -422,9 +364,7 @@ interface ProjectBoard {
   panY: number;
   zoom: number;
 }
-
 const STORAGE_KEY = 'filespatial_boards_v2';
-
 const boards = reactive<Record<string, ProjectBoard>>({
   'root': {
     id: 'root',
@@ -475,7 +415,6 @@ const boards = reactive<Record<string, ProjectBoard>>({
   }
 });
 
-// Load boards from localStorage if available
 function loadBoards() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -490,10 +429,9 @@ function loadBoards() {
     console.error('Konnte Boards nicht aus localStorage laden:', err);
   }
 }
-
 function saveBoards() {
   try {
-    // Clone boards without File objects for clean serialization
+    
     const copy: Record<string, any> = {};
     for (const [bId, bVal] of Object.entries(boards)) {
       copy[bId] = {
@@ -509,40 +447,31 @@ function saveBoards() {
     console.error('Konnte Boards nicht in localStorage speichern:', err);
   }
 }
-
 const currentBoardId = ref('root');
-
 const currentBoard = computed<ProjectBoard>(() => {
   return boards[currentBoardId.value] || boards['root'];
 });
-
 const currentBoardTitle = computed(() => {
   return currentBoard.value?.title || 'Hauptboard';
 });
-
 const nodes = computed(() => {
   return currentBoard.value.nodes;
 });
-
 const connections = computed(() => {
   return currentBoard.value.connections;
 });
-
 const panX = computed({
   get: () => currentBoard.value.panX,
   set: (val: number) => { currentBoard.value.panX = val; }
 });
-
 const panY = computed({
   get: () => currentBoard.value.panY,
   set: (val: number) => { currentBoard.value.panY = val; }
 });
-
 const zoom = computed({
   get: () => currentBoard.value.zoom,
   set: (val: number) => { currentBoard.value.zoom = val; }
 });
-
 const breadcrumbPath = computed(() => {
   const path: { id: string; title: string }[] = [];
   let currId: string | null = currentBoardId.value;
@@ -554,12 +483,10 @@ const breadcrumbPath = computed(() => {
   }
   return path;
 });
-
 function getSubBoardCount(targetId?: string) {
   if (!targetId || !boards[targetId]) return 0;
   return boards[targetId].nodes.length;
 }
-
 function navigateToBoard(boardId: string) {
   if (boards[boardId]) {
     currentBoardId.value = boardId;
@@ -569,7 +496,6 @@ function navigateToBoard(boardId: string) {
     saveBoards();
   }
 }
-
 function openProjectBoard(node: CanvasNode) {
   if (!node.targetBoardId) {
     const newBoardId = 'b-' + Date.now();
@@ -598,7 +524,6 @@ function openProjectBoard(node: CanvasNode) {
   }
   navigateToBoard(node.targetBoardId);
 }
-
 function addProjectNode() {
   const newBoardId = 'b-' + Date.now();
   const title = `Projekt ${Object.keys(boards).length}`;
@@ -612,7 +537,6 @@ function addProjectNode() {
     nodes: [],
     connections: []
   };
-
   const id = 'n-' + Date.now();
   currentBoard.value.nodes.push({
     id,
@@ -627,25 +551,21 @@ function addProjectNode() {
   saveBoards();
 }
 
-// Pan, Drag & Resize States
 const isPanning = ref(false);
 const startMouseX = ref(0);
 const startMouseY = ref(0);
-
 const fileInput = ref<HTMLInputElement | null>(null);
 const selectedNodeId = ref<string | null>(null);
 const isDraggingNode = ref(false);
 let dragOffset = { x: 0, y: 0 };
 let activeDragNode: CanvasNode | null = null;
 
-// Resize State
 const isResizingNode = ref(false);
 let activeResizeNode: CanvasNode | null = null;
 let resizeStartWidth = 0;
 let resizeStartHeight = 0;
 let resizeStartX = 0;
 let resizeStartY = 0;
-
 function getNodeCenter(nodeId: string) {
   const node = currentBoard.value.nodes.find(n => n.id === nodeId);
   if (!node) return { x: 0, y: 0 };
@@ -654,7 +574,6 @@ function getNodeCenter(nodeId: string) {
     y: node.y + (node.height ? node.height / 2 : 75)
   };
 }
-
 function startPan(e: MouseEvent) {
   if (e.button !== 0) return;
   if (e.target !== e.currentTarget && !(e.target as HTMLElement).classList.contains('fs-grid-background') && !(e.target as HTMLElement).classList.contains('fs-svg-connections')) return;
@@ -662,7 +581,6 @@ function startPan(e: MouseEvent) {
   startMouseX.value = e.clientX - panX.value;
   startMouseY.value = e.clientY - panY.value;
 }
-
 function onWindowMouseMove(e: MouseEvent) {
   if (isPanning.value) {
     panX.value = e.clientX - startMouseX.value;
@@ -691,7 +609,6 @@ function onWindowMouseMove(e: MouseEvent) {
     activeResizeNode.height = nextH;
   }
 }
-
 function onWindowMouseUp() {
   if (isDraggingNode.value || isResizingNode.value) {
     saveBoards();
@@ -702,20 +619,17 @@ function onWindowMouseUp() {
   activeDragNode = null;
   activeResizeNode = null;
 }
-
 function handleZoom(e: WheelEvent) {
   const zoomFactor = 1.1;
   let newZoom = e.deltaY < 0 ? zoom.value * zoomFactor : zoom.value / zoomFactor;
   newZoom = Math.min(Math.max(0.2, newZoom), 3);
   zoom.value = newZoom;
 }
-
 function resetView() {
   panX.value = 150;
   panY.value = 100;
   zoom.value = 1;
 }
-
 function startDragNode(e: MouseEvent, node: CanvasNode) {
   if (e.button !== 0) return;
   isDraggingNode.value = true;
@@ -728,7 +642,6 @@ function startDragNode(e: MouseEvent, node: CanvasNode) {
     y: rawY - node.y
   };
 }
-
 function startResizeNode(e: MouseEvent, node: CanvasNode) {
   if (e.button !== 0) return;
   isResizingNode.value = true;
@@ -740,7 +653,6 @@ function startResizeNode(e: MouseEvent, node: CanvasNode) {
   resizeStartHeight = node.height || 180;
 }
 
-// Node Enhancements: Duplicate & Color Palette
 function duplicateNode(node: CanvasNode) {
   const newId = 'n-' + Date.now();
   const duplicate: CanvasNode = {
@@ -754,13 +666,11 @@ function duplicateNode(node: CanvasNode) {
   selectedNodeId.value = newId;
   saveBoards();
 }
-
 function setNodeColor(node: CanvasNode, color: string) {
   node.color = color;
   saveBoards();
 }
 
-// Live Search & Focus Engine
 const searchResults = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
   if (!query) return [];
@@ -771,7 +681,6 @@ const searchResults = computed(() => {
     return inTitle || inContent || inFileName;
   });
 });
-
 let currentSearchFocusIdx = 0;
 function focusNextSearchResult() {
   if (searchResults.value.length === 0) return;
@@ -781,12 +690,10 @@ function focusNextSearchResult() {
     focusOnNode(targetNode);
   }
 }
-
 function isNodeHighlighted(node: CanvasNode): boolean {
   if (!searchQuery.value.trim()) return false;
   return searchResults.value.some(n => n.id === node.id);
 }
-
 function focusOnNode(node: CanvasNode) {
   selectedNodeId.value = node.id;
   const containerWidth = window.innerWidth;
@@ -795,11 +702,9 @@ function focusOnNode(node: CanvasNode) {
   panY.value = Math.round(containerHeight / 2 - (node.y + 100) * zoom.value);
 }
 
-// Workspace Management: Import & Clear
 function triggerImportFile() {
   importFileInput.value?.click();
 }
-
 function handleImportFile(e: Event) {
   const input = e.target as HTMLInputElement;
   if (!input.files || input.files.length === 0) return;
@@ -828,7 +733,6 @@ function handleImportFile(e: Event) {
   };
   reader.readAsText(file);
 }
-
 function clearWorkspace() {
   if (confirm('Möchtest du das aktuelle Whiteboard wirklich zurücksetzen? Alle nicht exportierten Notizen gehen verloren.')) {
     boards['root'].nodes = [];
@@ -838,7 +742,6 @@ function clearWorkspace() {
     saveBoards();
   }
 }
-
 function addNoteNode() {
   const id = 'n-' + Date.now();
   currentBoard.value.nodes.push({
@@ -853,7 +756,6 @@ function addNoteNode() {
   });
   saveBoards();
 }
-
 function removeNode(id: string) {
   const b = currentBoard.value;
   const index = b.nodes.findIndex(n => n.id === id);
@@ -864,28 +766,23 @@ function removeNode(id: string) {
   }
   saveBoards();
 }
-
 function triggerFileUpload() {
   fileInput.value?.click();
 }
-
 function handleFileInput(e: Event) {
   const target = e.target as HTMLInputElement;
   if (target.files) {
     processFiles(Array.from(target.files));
   }
 }
-
 function handleDragOver(e: DragEvent) {
   e.dataTransfer!.dropEffect = 'copy';
 }
-
 function handleDrop(e: DragEvent) {
   if (e.dataTransfer?.files) {
     processFiles(Array.from(e.dataTransfer.files));
   }
 }
-
 function processFiles(files: File[]) {
   files.forEach(async (file, index) => {
     const isImg = file.type.startsWith('image/');
@@ -893,7 +790,6 @@ function processFiles(files: File[]) {
     const id = 'n-' + Date.now() + '-' + index;
     const posX = (-panX.value + 250 + index * 40) / zoom.value;
     const posY = (-panY.value + 150 + index * 40) / zoom.value;
-
     if (isImg) {
       const url = URL.createObjectURL(file);
       currentBoard.value.nodes.push({
@@ -926,7 +822,6 @@ function processFiles(files: File[]) {
       };
       currentBoard.value.nodes.push(pdfNode);
       saveBoards();
-
       try {
         const arrayBuffer = await file.arrayBuffer();
         const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
@@ -953,7 +848,6 @@ function processFiles(files: File[]) {
   });
 }
 
-// PDF Viewer State
 const activePdfNode = ref<CanvasNode | null>(null);
 const activePdfDoc = ref<any>(null);
 const activePdfCurrentPage = ref(1);
@@ -964,13 +858,11 @@ const pdfError = ref<string | null>(null);
 const pdfCanvasRef = ref<HTMLCanvasElement | null>(null);
 const pdfContainerRef = ref<HTMLDivElement | null>(null);
 let currentRenderTask: any = null;
-
 async function retryLoadPdf() {
   if (activePdfNode.value) {
     await openPdfReader(activePdfNode.value);
   }
 }
-
 function openPdfInWindow(node: CanvasNode) {
   let url = node.url;
   if (!url && node.file) {
@@ -983,25 +875,23 @@ function openPdfInWindow(node: CanvasNode) {
       window.location.href = url;
     }
   } else {
-    // Fallback to overlay reader if no direct URL is available
+    
     openPdfReader(node);
   }
 }
-
 async function openPdfReader(node: CanvasNode) {
   activePdfNode.value = node;
   activePdfCurrentPage.value = 1;
   pdfScale.value = 1.3;
   pdfLoading.value = true;
   pdfError.value = null;
-
   try {
     let source: any;
     if (node.file) {
       const buffer = await node.file.arrayBuffer();
       source = { data: buffer };
     } else if (node.url) {
-      // Fetch into ArrayBuffer to avoid any CORS or streaming issues
+      
       try {
         const res = await fetch(node.url);
         if (res.ok) {
@@ -1014,18 +904,15 @@ async function openPdfReader(node: CanvasNode) {
         source = { url: node.url };
       }
     }
-
     if (!source) {
       pdfError.value = 'PDF-Quelldatei konnte nicht gefunden werden.';
       pdfLoading.value = false;
       return;
     }
-
     const loadingTask = pdfjsLib.getDocument(source);
     activePdfDoc.value = await loadingTask.promise;
     activePdfTotalPages.value = activePdfDoc.value.numPages;
     node.numPages = activePdfDoc.value.numPages;
-
     await nextTick();
     await renderPdfPage();
   } catch (err: any) {
@@ -1035,39 +922,32 @@ async function openPdfReader(node: CanvasNode) {
     pdfLoading.value = false;
   }
 }
-
 async function renderPdfPage() {
   if (!activePdfDoc.value || !pdfCanvasRef.value) return;
-
   if (currentRenderTask) {
     try {
       currentRenderTask.cancel();
     } catch {}
     currentRenderTask = null;
   }
-
   try {
     const page = await activePdfDoc.value.getPage(activePdfCurrentPage.value);
     const viewport = page.getViewport({ scale: pdfScale.value });
     const canvas = pdfCanvasRef.value;
     const context = canvas.getContext('2d');
     if (!context) return;
-
-    // Support high DPI screens
+    
     const outputScale = window.devicePixelRatio || 1;
     canvas.width = Math.floor(viewport.width * outputScale);
     canvas.height = Math.floor(viewport.height * outputScale);
     canvas.style.width = Math.floor(viewport.width) + 'px';
     canvas.style.height = Math.floor(viewport.height) + 'px';
-
     const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : undefined;
-
     const renderContext = {
       canvasContext: context,
       transform: transform,
       viewport: viewport
     };
-
     currentRenderTask = page.render(renderContext);
     await currentRenderTask.promise;
     currentRenderTask = null;
@@ -1077,27 +957,23 @@ async function renderPdfPage() {
     }
   }
 }
-
 async function prevPdfPage() {
   if (activePdfCurrentPage.value > 1) {
     activePdfCurrentPage.value--;
     await renderPdfPage();
   }
 }
-
 async function nextPdfPage() {
   if (activePdfCurrentPage.value < activePdfTotalPages.value) {
     activePdfCurrentPage.value++;
     await renderPdfPage();
   }
 }
-
 async function zoomPdf(delta: number) {
   const newScale = Math.min(Math.max(pdfScale.value + delta, 0.6), 3.0);
   pdfScale.value = Math.round(newScale * 10) / 10;
   await renderPdfPage();
 }
-
 function closePdfReader() {
   if (currentRenderTask) {
     try { currentRenderTask.cancel(); } catch {}
@@ -1107,7 +983,6 @@ function closePdfReader() {
   activePdfDoc.value = null;
   pdfError.value = null;
 }
-
 function exportBoard() {
   const data = JSON.stringify({ version: '2.0', currentBoardId: currentBoardId.value, boards }, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
@@ -1117,20 +992,17 @@ function exportBoard() {
   a.download = `workspace_${currentBoard.value.title.toLowerCase().replace(/\s+/g, '_')}.fspatial`;
   a.click();
 }
-
 onMounted(() => {
   loadTheme();
   loadBoards();
   window.addEventListener('mousemove', onWindowMouseMove);
   window.addEventListener('mouseup', onWindowMouseUp);
 });
-
 onUnmounted(() => {
   window.removeEventListener('mousemove', onWindowMouseMove);
   window.removeEventListener('mouseup', onWindowMouseUp);
 });
 </script>
-
 <style scoped>
 /* ZenTech Enterprise Theme Tokens */
 .fs-app {
@@ -1144,7 +1016,6 @@ onUnmounted(() => {
   position: relative;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
-
 /* Modern Header Architecture */
 .fs-header {
   height: 58px;
@@ -1159,35 +1030,29 @@ onUnmounted(() => {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
   gap: 16px;
 }
-
 .fs-header-left,
 .fs-header-center,
 .fs-header-right {
   display: flex;
   align-items: center;
 }
-
 .fs-header-left {
   gap: 12px;
   min-width: 0;
 }
-
 .fs-header-center {
   gap: 12px;
   flex-shrink: 0;
 }
-
 .fs-header-right {
   gap: 10px;
   flex-shrink: 0;
 }
-
 .fs-header-vsep {
   width: 1px;
   height: 20px;
   background: rgba(255, 255, 255, 0.1);
 }
-
 /* Brand */
 .fs-brand {
   display: flex;
@@ -1196,7 +1061,6 @@ onUnmounted(() => {
   cursor: pointer;
   user-select: none;
 }
-
 .fs-logo-box {
   width: 34px;
   height: 34px;
@@ -1209,21 +1073,17 @@ onUnmounted(() => {
   box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
   transition: transform 0.15s ease;
 }
-
 .fs-brand:hover .fs-logo-box {
   transform: scale(1.05);
 }
-
 .fs-logo {
   width: 22px;
   height: 22px;
 }
-
 .fs-brand-text {
   display: flex;
   flex-direction: column;
 }
-
 .fs-name {
   font-size: 1.05rem;
   font-weight: 800;
@@ -1231,12 +1091,10 @@ onUnmounted(() => {
   color: #fff;
   line-height: 1;
 }
-
 .fs-accent {
   color: #06b6d4;
   text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
 }
-
 /* Breadcrumbs */
 .fs-breadcrumbs {
   display: flex;
@@ -1247,7 +1105,6 @@ onUnmounted(() => {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
-
 .fs-crumb-btn {
   background: none;
   border: none;
@@ -1260,22 +1117,18 @@ onUnmounted(() => {
   transition: all 0.15s ease;
   white-space: nowrap;
 }
-
 .fs-crumb-btn:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
 }
-
 .fs-crumb-btn.active {
   color: #06b6d4;
   font-weight: 700;
 }
-
 .fs-crumb-sep {
   color: #475569;
   font-size: 0.7rem;
 }
-
 /* Center Toolbar Group */
 .fs-toolbar-group {
   display: flex;
@@ -1286,7 +1139,6 @@ onUnmounted(() => {
   padding: 3px;
   gap: 2px;
 }
-
 .fs-tool-btn {
   display: flex;
   align-items: center;
@@ -1301,25 +1153,20 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.15s ease;
 }
-
 .fs-tool-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
-
 .fs-tool-btn.highlight {
   color: #a5b4fc;
 }
-
 .fs-tool-btn.highlight:hover {
   background: rgba(99, 102, 241, 0.18);
   color: #c7d2fe;
 }
-
 .fs-tool-icon {
   font-size: 0.85rem;
 }
-
 /* Search Box */
 .fs-search-box {
   display: flex;
@@ -1332,12 +1179,10 @@ onUnmounted(() => {
   height: 32px;
   box-sizing: border-box;
 }
-
 .fs-search-icon {
   font-size: 0.75rem;
   opacity: 0.6;
 }
-
 .fs-search-input {
   background: transparent;
   border: none;
@@ -1346,16 +1191,13 @@ onUnmounted(() => {
   width: 120px;
   outline: none;
 }
-
 .fs-search-input:focus {
   width: 150px;
   transition: width 0.2s ease;
 }
-
 .fs-search-input::placeholder {
   color: #64748b;
 }
-
 .fs-search-count {
   font-size: 0.65rem;
   background: rgba(99, 102, 241, 0.25);
@@ -1364,7 +1206,6 @@ onUnmounted(() => {
   padding: 1px 5px;
   font-weight: 700;
 }
-
 /* Utilities (Grid & Reset View) */
 .fs-util-group {
   display: flex;
@@ -1375,7 +1216,6 @@ onUnmounted(() => {
   padding: 3px;
   gap: 2px;
 }
-
 .fs-icon-btn {
   width: 28px;
   height: 26px;
@@ -1390,17 +1230,14 @@ onUnmounted(() => {
   font-size: 0.85rem;
   transition: all 0.15s ease;
 }
-
 .fs-icon-btn:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
 }
-
 .fs-icon-btn.active {
   color: #22d3ee;
   background: rgba(6, 182, 212, 0.2);
 }
-
 /* Theme Pill */
 .fs-theme-pill {
   display: flex;
@@ -1413,11 +1250,9 @@ onUnmounted(() => {
   height: 32px;
   box-sizing: border-box;
 }
-
 .fs-theme-icon {
   font-size: 0.75rem;
 }
-
 .fs-theme-select {
   background: transparent;
   border: none;
@@ -1427,13 +1262,11 @@ onUnmounted(() => {
   outline: none;
   cursor: pointer;
 }
-
 .fs-theme-select option,
 .fs-theme-select optgroup {
   background: #0f172a;
   color: #f8fafc;
 }
-
 /* Workspace Group (Import, Export, Clear) */
 .fs-workspace-group {
   display: flex;
@@ -1444,7 +1277,6 @@ onUnmounted(() => {
   padding: 3px;
   gap: 3px;
 }
-
 .fs-ws-btn {
   background: transparent;
   border: 1px solid transparent;
@@ -1456,35 +1288,29 @@ onUnmounted(() => {
   transition: all 0.15s ease;
   color: #94a3b8;
 }
-
 .fs-ws-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
-
 .fs-ws-btn.export {
   background: rgba(6, 182, 212, 0.12);
   border-color: rgba(6, 182, 212, 0.3);
   color: #22d3ee;
   font-weight: 700;
 }
-
 .fs-ws-btn.export:hover {
   background: #06b6d4;
   color: #04070d;
   box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
 }
-
 .fs-ws-btn.clear {
   color: #f87171;
 }
-
 .fs-ws-btn.clear:hover {
   background: rgba(239, 68, 68, 0.15);
   color: #fca5a5;
   border-color: rgba(239, 68, 68, 0.25);
 }
-
 /* Viewport */
 .fs-canvas-container {
   flex: 1;
@@ -1496,11 +1322,9 @@ onUnmounted(() => {
   user-select: none;
   -webkit-user-select: none;
 }
-
 .fs-canvas-container:active {
   cursor: grabbing;
 }
-
 .fs-canvas-layer {
   position: absolute;
   top: 0;
@@ -1508,7 +1332,6 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
 }
-
 .fs-grid-background {
   position: absolute;
   top: -5000px;
@@ -1518,7 +1341,6 @@ onUnmounted(() => {
   background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
   background-size: 32px 32px;
 }
-
 .fs-svg-connections {
   position: absolute;
   top: -5000px;
@@ -1527,7 +1349,6 @@ onUnmounted(() => {
   height: 10000px;
   pointer-events: none;
 }
-
 /* Nodes */
 .fs-node {
   position: absolute;
@@ -1543,31 +1364,25 @@ onUnmounted(() => {
   overflow: visible;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
-
 .fs-node:active {
   cursor: grabbing;
 }
-
 .fs-node:hover {
   border-color: rgba(6, 182, 212, 0.3);
 }
-
 .fs-node.selected {
   border-color: #06b6d4;
   box-shadow: 0 0 24px rgba(6, 182, 212, 0.35), 0 16px 40px rgba(0, 0, 0, 0.7);
 }
-
 .fs-node.search-highlight {
   border-color: #f59e0b !important;
   box-shadow: 0 0 24px rgba(245, 158, 11, 0.6) !important;
   animation: pulseHighlight 2s infinite alternate;
 }
-
 @keyframes pulseHighlight {
   0% { transform: scale(1); }
   100% { transform: scale(1.02); }
 }
-
 .fs-node-header {
   display: flex;
   align-items: center;
@@ -1576,7 +1391,6 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-
 .fs-node-tag-badge {
   display: flex;
   align-items: center;
@@ -1589,13 +1403,11 @@ onUnmounted(() => {
   border: 1px solid;
   background: rgba(255, 255, 255, 0.03);
 }
-
 .fs-node-tag-dot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
 }
-
 .fs-node-title {
   flex: 1;
   font-size: 0.82rem;
@@ -1605,13 +1417,11 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .fs-node-actions {
   display: flex;
   align-items: center;
   gap: 4px;
 }
-
 .fs-node-action-btn {
   background: none;
   border: none;
@@ -1625,17 +1435,14 @@ onUnmounted(() => {
   justify-content: center;
   transition: all 0.15s ease;
 }
-
 .fs-node-action-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
-
 .fs-node-color-picker {
   position: relative;
   display: inline-block;
 }
-
 .fs-color-btn {
   width: 14px;
   height: 14px;
@@ -1644,7 +1451,6 @@ onUnmounted(() => {
   padding: 0;
   cursor: pointer;
 }
-
 .fs-color-palette {
   display: none;
   position: absolute;
@@ -1659,11 +1465,9 @@ onUnmounted(() => {
   z-index: 100;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
-
 .fs-node-color-picker:hover .fs-color-palette {
   display: flex;
 }
-
 .fs-color-swatch {
   width: 14px;
   height: 14px;
@@ -1671,11 +1475,9 @@ onUnmounted(() => {
   cursor: pointer;
   transition: transform 0.1s ease;
 }
-
 .fs-color-swatch:hover {
   transform: scale(1.3);
 }
-
 .fs-node-resizer {
   position: absolute;
   right: 2px;
@@ -1691,12 +1493,10 @@ onUnmounted(() => {
   opacity: 0.6;
   transition: opacity 0.15s ease, color 0.15s ease;
 }
-
 .fs-node-resizer:hover {
   opacity: 1;
   color: #06b6d4;
 }
-
 .fs-node-del {
   background: none;
   border: none;
@@ -1707,16 +1507,13 @@ onUnmounted(() => {
   border-radius: 4px;
   transition: all 0.15s ease;
 }
-
 .fs-node-del:hover {
   color: #ef4444;
   background: rgba(239, 68, 68, 0.1);
 }
-
 .fs-node-body {
   padding: 14px;
 }
-
 .fs-textarea {
   width: 100%;
   height: 120px;
@@ -1730,13 +1527,11 @@ onUnmounted(() => {
   resize: none;
   font-family: inherit;
 }
-
 .fs-textarea:focus {
   outline: none;
   border-color: #06b6d4;
   box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
 }
-
 .fs-asset-frame {
   width: 100%;
   height: 150px;
@@ -1748,13 +1543,11 @@ onUnmounted(() => {
   justify-content: center;
   padding: 12px;
 }
-
 .fs-node-img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
-
 .fs-file-meta {
   display: flex;
   align-items: center;
@@ -1763,7 +1556,6 @@ onUnmounted(() => {
   font-size: 0.72rem;
   color: #94a3b8;
 }
-
 .fs-mini-tag {
   background: rgba(6, 182, 212, 0.1);
   color: #06b6d4;
@@ -1772,14 +1564,12 @@ onUnmounted(() => {
   font-size: 0.65rem;
   font-weight: 600;
 }
-
 /* Project / Sub-Board Card Styling */
 .project-body {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
 .fs-project-card {
   display: flex;
   align-items: center;
@@ -1791,12 +1581,10 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.15s ease;
 }
-
 .fs-project-card:hover {
   background: rgba(99, 102, 241, 0.15);
   border-color: rgba(99, 102, 241, 0.4);
 }
-
 .fs-project-icon-box {
   width: 44px;
   height: 44px;
@@ -1807,12 +1595,10 @@ onUnmounted(() => {
   justify-content: center;
   flex-shrink: 0;
 }
-
 .fs-project-icon-box svg {
   width: 24px;
   height: 24px;
 }
-
 .fs-project-details {
   display: flex;
   flex-direction: column;
@@ -1820,7 +1606,6 @@ onUnmounted(() => {
   flex: 1;
   min-width: 0;
 }
-
 .fs-project-title-input {
   background: transparent;
   border: 1px solid transparent;
@@ -1833,26 +1618,21 @@ onUnmounted(() => {
   font-family: inherit;
   transition: all 0.15s ease;
 }
-
 .fs-project-title-input:hover {
   border-color: rgba(255, 255, 255, 0.15);
 }
-
 .fs-project-title-input:focus {
   outline: none;
   border-color: #6366f1;
   background: rgba(0, 0, 0, 0.4);
 }
-
 .fs-project-badge {
   font-size: 0.68rem;
   color: #a5b4fc;
 }
-
 .fs-project-actions {
   display: flex;
 }
-
 .fs-project-btn {
   width: 100%;
   padding: 7px 12px;
@@ -1868,13 +1648,11 @@ onUnmounted(() => {
   justify-content: center;
   transition: all 0.15s ease;
 }
-
 .fs-project-btn:hover {
   background: #6366f1;
   color: #fff;
   box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
 }
-
 .fs-pdf-preview {
   display: flex;
   align-items: center;
@@ -1886,12 +1664,10 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.15s ease;
 }
-
 .fs-pdf-preview:hover {
   border-color: rgba(6, 182, 212, 0.3);
   background: rgba(6, 182, 212, 0.04);
 }
-
 .fs-pdf-icon-frame {
   width: 40px;
   height: 40px;
@@ -1901,34 +1677,28 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
 }
-
 .fs-pdf-icon-frame svg {
   width: 22px;
   height: 22px;
 }
-
 .fs-pdf-info {
   display: flex;
   flex-direction: column;
 }
-
 .fs-pdf-name {
   font-size: 0.82rem;
   font-weight: 600;
   color: #f1f5f9;
 }
-
 .fs-pdf-sub {
   font-size: 0.68rem;
   color: #64748b;
 }
-
 .fs-pdf-actions {
   display: flex;
   gap: 8px;
   margin-top: 10px;
 }
-
 .fs-pdf-btn {
   flex: 1;
   padding: 7px 10px;
@@ -1946,35 +1716,29 @@ onUnmounted(() => {
   text-decoration: none;
   transition: all 0.15s ease;
 }
-
 .fs-pdf-btn:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.2);
 }
-
 .fs-pdf-btn.primary {
   background: rgba(6, 182, 212, 0.15);
   border-color: rgba(6, 182, 212, 0.35);
   color: #22d3ee;
   font-weight: 700;
 }
-
 .fs-pdf-btn.primary:hover {
   background: #06b6d4;
   color: #04070d;
 }
-
 .fs-pdf-btn.secondary {
   flex: 0 0 auto;
   padding: 7px 10px;
 }
-
 .fs-btn-icon {
   font-size: 0.85rem;
   line-height: 1;
 }
-
 /* Interactive PDF Modal */
 .fs-pdf-modal-backdrop {
   position: fixed;
@@ -1987,7 +1751,6 @@ onUnmounted(() => {
   justify-content: center;
   padding: 24px;
 }
-
 .fs-pdf-modal {
   width: 90vw;
   max-width: 960px;
@@ -2000,7 +1763,6 @@ onUnmounted(() => {
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(6, 182, 212, 0.15);
   overflow: hidden;
 }
-
 .fs-pdf-modal-header {
   height: 52px;
   padding: 0 16px;
@@ -2011,14 +1773,12 @@ onUnmounted(() => {
   justify-content: space-between;
   gap: 16px;
 }
-
 .fs-pdf-modal-title {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
 }
-
 .fs-pdf-modal-filename {
   font-size: 0.85rem;
   font-weight: 600;
@@ -2027,7 +1787,6 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .fs-pdf-modal-pages {
   font-size: 0.72rem;
   color: #06b6d4;
@@ -2036,13 +1795,11 @@ onUnmounted(() => {
   border-radius: 4px;
   white-space: nowrap;
 }
-
 .fs-pdf-modal-controls {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .fs-modal-btn {
   padding: 5px 10px;
   font-size: 0.75rem;
@@ -2055,29 +1812,24 @@ onUnmounted(() => {
   text-decoration: none;
   transition: all 0.15s ease;
 }
-
 .fs-modal-btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
-
 .fs-modal-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
 }
-
 .fs-modal-btn.secondary {
   color: #06b6d4;
   border-color: rgba(6, 182, 212, 0.3);
 }
-
 .fs-modal-zoom-text {
   font-size: 0.72rem;
   color: #94a3b8;
   min-width: 44px;
   text-align: center;
 }
-
 .fs-modal-close {
   background: none;
   border: none;
@@ -2088,12 +1840,10 @@ onUnmounted(() => {
   border-radius: 6px;
   transition: all 0.15s ease;
 }
-
 .fs-modal-close:hover {
   color: #ef4444;
   background: rgba(239, 68, 68, 0.1);
 }
-
 .fs-pdf-modal-body {
   flex: 1;
   overflow: auto;
@@ -2104,14 +1854,12 @@ onUnmounted(() => {
   background: #070a10;
   position: relative;
 }
-
 .fs-pdf-canvas {
   background: #ffffff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border-radius: 4px;
   max-width: 100%;
 }
-
 .fs-pdf-loader {
   position: absolute;
   top: 50%;
@@ -2124,7 +1872,6 @@ onUnmounted(() => {
   color: #94a3b8;
   font-size: 0.85rem;
 }
-
 .fs-pdf-spinner {
   width: 24px;
   height: 24px;
@@ -2133,11 +1880,9 @@ onUnmounted(() => {
   border-radius: 50%;
   animation: fs-spin 0.7s linear infinite;
 }
-
 @keyframes fs-spin {
   to { transform: rotate(360deg); }
 }
-
 .fs-theme-select-box {
   display: flex;
   align-items: center;
@@ -2147,11 +1892,9 @@ onUnmounted(() => {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-
 .fs-theme-icon {
   font-size: 0.85rem;
 }
-
 .fs-theme-select {
   background: transparent;
   border: none;
@@ -2162,17 +1905,14 @@ onUnmounted(() => {
   outline: none;
   font-family: inherit;
 }
-
 .fs-theme-select optgroup {
   background: #0f172a;
   color: #94a3b8;
 }
-
 .fs-theme-select option {
   background: #0b0f19;
   color: #f8fafc;
 }
-
 /* PDF Error & Fallback Frame */
 .fs-pdf-error-frame {
   width: 100%;
@@ -2187,21 +1927,17 @@ onUnmounted(() => {
   border-radius: 12px;
   text-align: center;
 }
-
 .fs-pdf-error-icon {
   font-size: 2rem;
 }
-
 .fs-pdf-error-text {
   font-size: 0.85rem;
   color: #e2e8f0;
 }
-
 .fs-pdf-error-actions {
   display: flex;
   gap: 10px;
 }
-
 .fs-pdf-fallback-iframe {
   width: 100%;
   height: 500px;
@@ -2210,7 +1946,6 @@ onUnmounted(() => {
   background: #fff;
   margin-top: 10px;
 }
-
 /* Cockpit Footer */
 .fs-cockpit-bar {
   height: 36px;
@@ -2223,45 +1958,37 @@ onUnmounted(() => {
   color: #64748b;
   z-index: 50;
 }
-
 .fs-cockpit-item {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-
 .fs-c-label {
   color: #475569;
   text-transform: uppercase;
   font-weight: 700;
   font-size: 0.64rem;
 }
-
 .fs-c-val {
   color: #cbd5e1;
   font-weight: 600;
 }
-
 .fs-c-divider {
   width: 1px;
   height: 14px;
   background: rgba(255, 255, 255, 0.08);
   margin: 0 14px;
 }
-
 .fs-c-right {
   margin-left: auto;
 }
-
 .fs-hint-accent {
   color: #06b6d4;
   font-weight: 600;
 }
-
 /* =========================================================
    THEMES: DARK MODES & LIGHT MODES
    ========================================================= */
-
 /* Theme 1: Midnight OLED (Dark) */
 .fs-app.theme-midnight {
   background: #000000;
@@ -2283,7 +2010,6 @@ onUnmounted(() => {
   background: #000000;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
-
 /* Theme 2: Cyber Neon (Dark) */
 .fs-app.theme-cyberpunk {
   background: #090514;
@@ -2315,7 +2041,6 @@ onUnmounted(() => {
   background: rgba(15, 8, 35, 0.96);
   border-top: 1px solid rgba(168, 85, 247, 0.2);
 }
-
 /* Theme 3: Clean Titanium (Light Mode) */
 .fs-app.theme-clean-light {
   background: #f1f5f9;
@@ -2438,7 +2163,6 @@ onUnmounted(() => {
   border-top: 1px solid #e2e8f0;
   color: #64748b;
 }
-
 /* Theme 4: Warm Paper (Light Mode) */
 .fs-app.theme-paper-light {
   background: #fbf8f2;
@@ -2525,5 +2249,4 @@ onUnmounted(() => {
   border-top: 1px solid #e7e5e4;
   color: #78716c;
 }
-
 </style>

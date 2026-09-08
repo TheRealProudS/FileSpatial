@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Production build
+dist/
+
+# Archive & temporary files
+*.tar.gz
+*.zip
+*.log
+
+# Server & Deployment configs
+*.conf
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
